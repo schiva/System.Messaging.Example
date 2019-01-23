@@ -2,7 +2,7 @@
 
 # Form Create
   MessageManager := TMessageManager.DefaultManager;
-  // ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------  
   // TMessge<T> : 객체의 자동 메모리 Free가 되지 않음. ( 수동으로 해야 함 )
   MessageManager.SubscribeToMessage(TMessage<String>, onMessageString);
   MessageManager.SubscribeToMessage(TMessage<TStringList>, OnMessageTStringList2);
