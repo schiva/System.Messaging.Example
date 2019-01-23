@@ -17,6 +17,7 @@ type
     procedure onMessage(const Sender: TObject; const M: TMessage);
     procedure onDataMessage(const Sender: TObject; const M: TMessage);
     procedure onPacket(const Sender: TObject; const M: TMessage);
+    procedure OnMessageTStringList2(const Sender:TObject; const M:TMessage);
   public
     { Public declarations }
   end;
@@ -48,6 +49,7 @@ var
 begin
   MessageManager := TMessageManager.DefaultManager;
   MessageManager.SubscribeToMessage(TMessage<String>, onMessage);
+  MessageManager.SubscribeToMessage(TMessage<TStringlist>, OnMessageTStringList2);
   MessageManager.SubscribeToMessage(TObjectMessage<TDataPacket>, onDataMessage);
   MessageManager.SubscribeToMessage(TObjectMessage<TStringList>, onPacket);
 
@@ -66,6 +68,18 @@ end;
 procedure TfmChild.onMessage(const Sender: TObject; const M: TMessage);
 begin
   Memo1.Lines.Add( (m as TMessage<String>).Value  );
+end;
+
+procedure TfmChild.OnMessageTStringList2(const Sender: TObject;
+  const M: TMessage);
+var
+  data: TStringList;
+begin
+  data := (m as TMessage<TStringList>).Value ;
+  memo1.Lines.Add('TStringList Paceket ......');
+  memo1.Lines.Add(data.Text);
+
+
 end;
 
 procedure TfmChild.onPacket(const Sender: TObject; const M: TMessage);

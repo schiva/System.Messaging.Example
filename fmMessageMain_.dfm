@@ -17,7 +17,7 @@ object fmMessageMain: TfmMessageMain
   object Button1: TButton
     Left = 8
     Top = 16
-    Width = 120
+    Width = 220
     Height = 25
     Caption = 'Show Child'
     TabOrder = 0
@@ -26,16 +26,16 @@ object fmMessageMain: TfmMessageMain
   object Button2: TButton
     Left = 8
     Top = 47
-    Width = 120
+    Width = 220
     Height = 25
-    Caption = 'Send Message'
+    Caption = 'Send Message(TMessage<String>)'
     TabOrder = 1
     OnClick = Button2Click
   end
   object Memo1: TMemo
-    Left = 136
+    Left = 248
     Top = 18
-    Width = 333
+    Width = 221
     Height = 273
     Lines.Strings = (
       'Memo1')
@@ -43,17 +43,17 @@ object fmMessageMain: TfmMessageMain
   end
   object Button3: TButton
     Left = 8
-    Top = 78
-    Width = 120
+    Top = 98
+    Width = 220
     Height = 25
-    Caption = 'Send Message #2'
+    Caption = 'Send Message(CustomClass)'
     TabOrder = 3
     OnClick = Button3Click
   end
   object Button4: TButton
     Left = 10
-    Top = 146
-    Width = 120
+    Top = 166
+    Width = 220
     Height = 25
     Caption = 'Send Message'#13#10'(Thread)'
     TabOrder = 4
@@ -61,11 +61,29 @@ object fmMessageMain: TfmMessageMain
   end
   object Button5: TButton
     Left = 8
-    Top = 109
-    Width = 120
+    Top = 129
+    Width = 220
     Height = 25
-    Caption = 'Send Message #3'
+    Caption = 'Send Message(TObjectMessage<TStringList>)'
     TabOrder = 5
     OnClick = Button5Click
+  end
+  object Button6: TButton
+    Left = 10
+    Top = 197
+    Width = 220
+    Height = 32
+    Caption = 'Send Message'#13#10'(Thread Sync)'
+    TabOrder = 6
+    OnClick = Button6Click
+  end
+  object Button7: TButton
+    Left = 8
+    Top = 72
+    Width = 220
+    Height = 25
+    Caption = 'Send Message(TMessage<TStringList>)'
+    TabOrder = 7
+    OnClick = Button7Click
   end
 end

@@ -15,16 +15,21 @@ type
     Button3: TButton;
     Button4: TButton;
     Button5: TButton;
+    Button6: TButton;
+    Button7: TButton;
     procedure FormCreate(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure Button4Click(Sender: TObject);
     procedure Button5Click(Sender: TObject);
+    procedure Button6Click(Sender: TObject);
+    procedure Button7Click(Sender: TObject);
   private
-    procedure OnPacket(const Sender:TObject; const M:TMessage);
-    procedure onMessage(const Sender: TObject; const M: TMessage);
-    procedure onDataMessage(const Sender: TObject; const M: TMessage);
+    procedure OnMessageTStringList(const Sender:TObject; const M:TMessage);
+    procedure OnMessageTStringList2(const Sender:TObject; const M:TMessage);
+    procedure onMessageString(const Sender: TObject; const M: TMessage);
+    procedure onMessageTCustomClass(const Sender: TObject; const M: TMessage);
 
   public
     { Public declarations }
@@ -119,6 +124,52 @@ begin
 
 end;
 
+procedure TfmMessageMain.Button6Click(Sender: TObject);
+var
+  th: TThread;
+begin
+  th := TThread.CreateAnonymousThread(procedure
+  var
+    MessageManager: TMessageManager;
+    message: TMessage;
+    data: TDataPacket;
+  begin
+    MessageManager := TMessageManager.DefaultManager;
+
+    TThread.Synchronize(nil, procedure
+    begin
+      data := TDataPacket.Create;
+      data.Data := format('From Thread [%d]:', [GetcurrentThreadid]) + formatDateTime('hh:nn:ss',now);
+      data.x    := 1;
+      data.y    := 1;
+
+      message := TObjectMessage<TDataPacket>.Create(Data);
+
+      MessageManager.SendMessage(self, message, true);
+    end);
+  end);
+  th.Start;
+
+end;
+
+procedure TfmMessageMain.Button7Click(Sender: TObject);
+var
+  MessageManager: TMessageManager;
+  message: TMessage;
+  AList: TStringList;
+begin
+  AList := TStringList.Create;
+  AList.Values['Code'] := 'Test Code';
+  AList.Values['Param'] := 'Test Param';
+
+  MessageManager := TMessageManager.DefaultManager;
+  message := TMessage<TStringList>.Create( AList );
+  MessageManager.SendMessage(self, message, true);
+  // TMessage<T> 형태는 수동으로 메모리 관리.
+  AList.Free;
+
+end;
+
 procedure TfmMessageMain.FormCreate(Sender: TObject);
 var
   MessageManager: TMessageManager;
@@ -126,12 +177,30 @@ begin
   ReportMemoryLeaksOnShutdown := True;
   // ---------------------------------------------------------------------------
   MessageManager := TMessageManager.DefaultManager;
-  MessageManager.SubscribeToMessage(TMessage<String>, onMessage);
-  MessageManager.SubscribeToMessage(TObjectMessage<TDataPacket>, onDataMessage);
-  MessageManager.SubscribeToMessage(TObjectMessage<TStringList>, onPacket);
+  // ---------------------------------------------------------------------------
+  // TMessge<T> : 객체의 자동 메모리 Free가 되지 않음. ( 수동으로 해야 함 )
+  MessageManager.SubscribeToMessage(TMessage<String>, onMessageString);
+  MessageManager.SubscribeToMessage(TMessage<TStringList>, OnMessageTStringList2);
+  // TObjectMessage<T> : 객체의 자동 메모리 Free가 지원 됨.
+  MessageManager.SubscribeToMessage(TObjectMessage<TDataPacket>, onMessageTCustomClass);
+
+  // 익명 메소드 포인터 사용예.
+  MessageManager.SubscribeToMessage(TObjectMessage<TStringList>, OnMessageTStringList);
+
+  // 익명 메소드 포인터 없이 사용예.
+  MessageManager.SubscribeToMessage(TObjectMessage<TStringList>,
+    procedure (const Sender: TObject; const M: TMessage)
+    var
+      data: TStringList;
+    begin
+      data := (m as TObjectMessage<TStringList>).Value ;
+      memo1.Lines.Add('TStringList Paceket ......');
+      memo1.Lines.Add(data.Text);
+    end);
+
 end;
 
-procedure TfmMessageMain.onDataMessage(const Sender: TObject; const M: TMessage);
+procedure TfmMessageMain.onMessageTCustomClass(const Sender: TObject; const M: TMessage);
 var
   data: TDataPacket;
 begin
@@ -141,12 +210,12 @@ begin
 
 end;
 
-procedure TfmMessageMain.onMessage(const Sender: TObject; const M: TMessage);
+procedure TfmMessageMain.onMessageString(const Sender: TObject; const M: TMessage);
 begin
   Memo1.Lines.Add( (m as TMessage<String>).Value  );
 end;
 
-procedure TfmMessageMain.OnPacket(const Sender: TObject; const M: TMessage);
+procedure TfmMessageMain.OnMessageTStringList(const Sender: TObject; const M: TMessage);
 var
   data: TStringList;
 begin
@@ -154,6 +223,17 @@ begin
   memo1.Lines.Add('TStringList Paceket ......');
   memo1.Lines.Add(data.Text);
 
+
+end;
+
+procedure TfmMessageMain.OnMessageTStringList2(const Sender: TObject;
+  const M: TMessage);
+var
+  data: TStringList;
+begin
+  data := (m as TMessage<TStringList>).Value;
+  memo1.Lines.Add('TStringList Paceket ......');
+  memo1.Lines.Add(data.Text);
 
 end;
 
