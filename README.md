@@ -2,17 +2,17 @@
 
 # Form Create
   MessageManager := TMessageManager.DefaultManager;
-  // ---------------------------------------------------------------------------  
-  // TMessge<T> : 객체의 자동 메모리 Free가 되지 않음. ( 수동으로 해야 함 )
+  
+  * TMessge<T> : 객체의 자동 메모리 Free가 되지 않음. ( 수동으로 해야 함 )
   MessageManager.SubscribeToMessage(TMessage<String>, onMessageString);
   MessageManager.SubscribeToMessage(TMessage<TStringList>, OnMessageTStringList2);
-  // TObjectMessage<T> : 객체의 자동 메모리 Free가 지원 됨.
+  * TObjectMessage<T> : 객체의 자동 메모리 Free가 지원 됨.
   MessageManager.SubscribeToMessage(TObjectMessage<TDataPacket>, onMessageTCustomClass);
 
-  // 익명 메소드 포인터 사용예.
+  * 익명 메소드 포인터 사용예.
   MessageManager.SubscribeToMessage(TObjectMessage<TStringList>, OnMessageTStringList);
 
-  // 익명 메소드 포인터 없이 사용예.
+  * 익명 메소드 포인터 없이 사용예.
   MessageManager.SubscribeToMessage(TObjectMessage<TStringList>,
     procedure (const Sender: TObject; const M: TMessage)
     var
